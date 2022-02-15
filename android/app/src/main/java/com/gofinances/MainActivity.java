@@ -8,6 +8,7 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
 import expo.modules.ReactActivityDelegateWrapper;
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView; // Linha que deve ser adicionada
 
 public class MainActivity extends ReactActivity {
   @Override
@@ -32,6 +33,11 @@ public class MainActivity extends ReactActivity {
   protected ReactActivityDelegate createReactActivityDelegate() {
     return new ReactActivityDelegateWrapper(this,
       new ReactActivityDelegate(this, getMainComponentName())
+       @Override // Linha que deve ser adicionada
+          protected ReactRootView createRootView() { // Linha que deve ser adicionada
+          return new RNGestureHandlerEnabledRootView(MainActivity.this); // Linha que deve ser adicionada
+        }
+      }
     );
   }
 

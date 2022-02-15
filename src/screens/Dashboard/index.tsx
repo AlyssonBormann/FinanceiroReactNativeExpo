@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "../../components/Forms/Button";
 
 import { HighlightCard } from "../../components/HighlightCard";
 import {
@@ -20,6 +21,7 @@ import {
   Transactions,
   Title,
   TransactionList,
+  LogoutButton,
 } from "./styles";
 
 export interface DataListProps extends TransactionCardProps {
@@ -68,7 +70,9 @@ export function Dashboard() {
               <UserName>Bormann</UserName>
             </User>
           </UserInfo>
-          <Icon name="power" />
+          <LogoutButton onPress={() => console.log("BUnda")}>
+            <Icon name="power" />
+          </LogoutButton>
         </UserWrapper>
       </Header>
 
