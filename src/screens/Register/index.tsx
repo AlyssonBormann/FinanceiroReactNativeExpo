@@ -113,6 +113,7 @@ export function Register() {
   }
 
   return (
+    //<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <>
       <Container>
         <Header>
