@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Modal, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { Modal, Alert, Keyboard } from "react-native";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -114,7 +115,11 @@ export function Register() {
 
   return (
     //<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <>
+    <TouchableWithoutFeedback
+      onPress={Keyboard.dismiss}
+      containerStyle={{ flex: 1 }}
+      style={{ flex: 1 }}
+    >
       <Container>
         <Header>
           <Title>Cadastro</Title>
@@ -166,6 +171,6 @@ export function Register() {
           />
         </Modal>
       </Container>
-    </>
+    </TouchableWithoutFeedback>
   );
 }
