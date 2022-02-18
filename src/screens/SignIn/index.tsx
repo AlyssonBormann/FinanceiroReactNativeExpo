@@ -29,7 +29,7 @@ export function SignIn() {
   async function handleSignInWithGoogle() {
     try {
       setIsLoading(true);
-      await signInWithGoogle();
+      return await signInWithGoogle();
     } catch (error) {
       const message = (error as Error).message;
       Alert.alert("Não foi possivel conectar a conta google", message);

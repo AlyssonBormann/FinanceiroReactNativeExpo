@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { ActivityIndicator, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components";
+import { useAuth } from "../../hooks/auth";
 
 import { HighlightCard } from "../../components/HighlightCard";
 import {
@@ -48,18 +50,26 @@ export function Dashboard() {
     {} as HighlightData
   );
 
+  const { signOut, user } = useAuth();
   const theme = useTheme();
 
   function getLastTransactionDate(
     collection: DataListProps[],
     type: "positive" | "negative"
   ) {
+    const collectionFilttered = collection.filter(
+      (transaction) => transaction.type === type
+    );
+    if (collectionFilttered.length === 0) {
+      return 0;
+    }
+
     const lastTransaction = new Date(
       Math.max.apply(
         Math,
-        collection
-          .filter((transaction) => transaction.type === type)
-          .map((transaction) => new Date(transaction.date).getTime())
+        collectionFilttered.map((transaction) =>
+          new Date(transaction.date).getTime()
+        )
       )
     );
     return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString(
@@ -69,7 +79,7 @@ export function Dashboard() {
   }
 
   async function loadTransactions() {
-    const dataKey = "@gofinances:transactions";
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const transactions = response ? JSON.parse(response) : [];
 
@@ -116,7 +126,10 @@ export function Dashboard() {
       "negative"
     );
 
-    const totalInterval = `01 à ${lastTransactionExpensives}`;
+    const totalInterval =
+      lastTransactionEntries === 0 && lastTransactionExpensives === 0
+        ? "Não há transações"
+        : `01 à ${lastTransactionExpensives}`;
 
     const total = entriesTotal - expensiveTotal;
 
@@ -126,14 +139,20 @@ export function Dashboard() {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: `Última entrada dia ${lastTransactionEntries}`,
+        lastTransaction:
+          lastTransactionEntries === 0
+            ? "Não há transações"
+            : `Última entrada dia ${lastTransactionEntries}`,
       },
       expensives: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransaction: `Última saída dia ${lastTransactionExpensives}`,
+        lastTransaction:
+          lastTransactionExpensives === 0
+            ? "Não há transações"
+            : `Última saída dia ${lastTransactionExpensives}`,
       },
       total: {
         amount: total.toLocaleString("pt-BR", {
@@ -144,6 +163,15 @@ export function Dashboard() {
       },
     });
     setIsLoading(false);
+  }
+
+  async function loggOff() {
+    Alert.alert(
+      `Você deseja desconectar?`,
+      "",
+      [{ text: "Cancelar" }, { text: "Desconectar", onPress: () => signOut() }],
+      { cancelable: false }
+    );
   }
 
   useEffect(() => {
@@ -172,15 +200,15 @@ export function Dashboard() {
               <UserInfo>
                 <Photo
                   source={{
-                    uri: "https://avatars.githubusercontent.com/u/11725888?v=4",
+                    uri: user.photo,
                   }}
                 />
                 <User>
                   <UserGreeting>Olá, </UserGreeting>
-                  <UserName>Bormann</UserName>
+                  <UserName>{`${user.name} ${user.lastName}`}</UserName>
                 </User>
               </UserInfo>
-              <LogoutButton onPress={() => console.log("BUnda")}>
+              <LogoutButton onPress={loggOff}>
                 <Icon name="power" />
               </LogoutButton>
             </UserWrapper>
